@@ -145,9 +145,8 @@ def get_wikipedia_links(text_content):
 
 def parseData(data):
 
-  print(data)
-  print("type is")
-  print(type(data))
+  print(json.load(data))
+
   # print("parsedata")
   # text - string
   # array of paragraphs
