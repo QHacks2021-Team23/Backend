@@ -2,19 +2,6 @@ from google.cloud import language_v1
 import nltk
 
 
-# def is_adj(word):
-#     '''
-#     Checks the part of speech of a word
-
-#     Args:
-#         word : word to check
-#     Return:
-#         True if a word is an adjective
-
-#     '''
-#     part_of_speech = nltk.pos_tag(nltk.word_tokenize(word))[0][1]
-#     return "J" in part_of_speech
-
 def get_voice(text_content):
     """
     Analyse the voice of the text. Ideal use case for sentence or paragraph.
@@ -47,9 +34,14 @@ def get_voice(text_content):
             text=text.content,
             voice=language_v1.PartOfSpeech.Voice(part_of_speech.voice).name,
         ))
-    ##return the voice of the sentence
 
-    return return_data
+    # print("Get Voice returned successfully...")
+
+    for dictionary in return_data:
+        if dictionary["voice"] == "PASSIVE":
+            return "PASSIVE"
+    return "ACTIVE"
+    ##return the voice of the sentence
 
 
 def get_wikipedia_links(text_content):
@@ -82,10 +74,9 @@ def get_wikipedia_links(text_content):
             if(metadata_name=='wikipedia_url'):
                 return_data.append(dict(
                     name=entity.name,
-                    type=language_v1.Entity.Type(entity.type_).name,
                     url=metadata_value
                 ))
-
+    # print("Get Wiki Links returned successfully...")
     return return_data
 
 
@@ -109,10 +100,10 @@ I love that really big old green antique car that is always parked at the end of
 '''
 
 text_content = wikipedia_test
-print(get_wikipedia_links(text_content))
+# print(get_wikipedia_links(text_content))
 
 
 
-# text_content = active_voice
-text_content = passive_voice
-print(get_voice(text_content))
+text_content = active_voice
+# text_content = passive_voice
+# print(get_voice(text_content))
