@@ -214,6 +214,11 @@ def parseData(data):
   # return essayAsArray
   return 0
 
+def getSynonym(wordToReplace):
+
+  dictionary=PyDictionary()     
+
+  return dictionary.synonym(wordToReplace)
 
 @app.route('/', methods=['GET','POST']) 
 def home():
@@ -223,12 +228,20 @@ def home():
     data = parseData(arrayOfParagraphs)
     return jsonify(data)
   else:
-    return "no data was given"
+    return {"error" : True}
 
 @app.route('/changeLanguage',methods=['POST'])
 def change():
   setting = request.data.decode("utf-8")
 
+@app.route('/getSynonym', methods=['POST'])
+def syn():
+  word = request.get_json()["word"]
+  data = getSynonym(word)
+  if (len(synonyms) != 0):
+    return jsonify(data)
+  else:
+    return {"error" : True}
 
 if __name__ == '__main__':
     app.run(debug=True)
