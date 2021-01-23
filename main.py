@@ -144,6 +144,7 @@ def get_wikipedia_links(text_content):
 
 
 def parseData(data):
+
   print(data)
   print("type is")
   print(type(data))
@@ -164,89 +165,55 @@ def parseData(data):
   # The afternoon grew so glowering that in the sixth inning the arc lights were turned on--always a wan sight in the daytime, like the burning headlights of a funeral procession. Aided by the gloom, Fisher was slicing through the Sox rookies, and Williams did not come to bat in the seventh. He was second up in the eighth. This was almost certainly his last time to come to the plate in Fenway Park, and instead of merely cheering, as we had at his three previous appearances, we stood, all of us, and applauded
   # ''']
 
-  essay = data
-  #split sentences
+  # essay = data
 
-  #essayWordCount = {}
+  # essayAsArray = []
 
-  #essayAsString = ""
+  # tool = language_tool_python.LanguageTool(setting)
 
-  essayAsArray = []
+  # for para in essay:
+  #   sentences = para.re.split('.|!|?', str)
+  #   sentenceChangedDict = {}
+  #   wikipediaArr = {}
+  #   sentenceChangedArray = []
+  #   paragraphsWordCount = {}
 
-  tool = language_tool_python.LanguageTool(setting)
+  #   sentences = [x for x in sentences if x] #get rid of null
 
+  #   paragraph = ""
 
-  for para in essay:
-    sentences = para.split(".")
-    print(sentences)
-    sentenceChangedDict = {}
-    wikipediaArr = {}
-    sentenceChangedArray = []
+  #   for sentence in sentences:
 
-    sentences = [x for x in sentences if x] #get rid of null
+  #     newString = sentence
 
-    for sentence in sentences:
-      newString = sentence
+  #     if(sentence != tool.correct(sentence)):
+  #       newString = tool.correct(sentence)
 
-      if(sentence != tool.correct(sentence)):
-        newString = tool.correct(sentence)
+  #     sentenceWordCount = countWords(newString)
 
-      sentenceWordCount = countWords(newString)
+  #     paragraphWordCount = mergeDictionary(paragraphWordCount, sentenceWordCount)
 
-      for word in sentenceWordCount:  #check if a word appears too many times
-        if (sentenceWordCount[word] >= 3):
-          newString = replaceWord(newString, word)
+  #     ##uncomment later
+  #     print('getting voice')
+  #     voice = get_voice(newString)
+  #     print('getting links')
+  #     wikipediaArr = get_wikipedia_links(newString)
 
-      if(sentence != tool.correct(sentence)):
-        newString = tool.correct(newString)
-      ## wikipedia link
-      ## voice
+  #     sentenceChangedDict["changed"] = newString != sentence
+  #     sentenceChangedDict["sentence"] = newString
+  #     sentenceChangedDict["voice"] = voice
 
-      # [{
-      #   sentence: {info},
-      #   sentence: {info},
-      #   sentence: {info}
-      # },
-      # {
-      #   sentence: (Bool,String,Arr)
-      # }]
+  #     sentenceChangedArray.append(sentenceChangedArray)      
 
-      ##uncomment later
-      print('getting voice')
-      voice = get_voice(newString)
-      print('getting links')
-      wikipediaArr = get_wikipedia_links(newString)
-      # voice = "PASSIVE"
-      # wikipediaArr = [{"name":"WORD","url":"https://wikipedia.org"}]
+  #   if len(wikipediaArr) == 0: wikipediaArr[0] = {"name" : False}
 
-      if (newString != sentence):
-        sentenceChangedDict[newString] = (True, voice)
-      else:
-        sentenceChangedDict[newString] = (False, voice)
+  #   paragraph = {"sentencesArray" : sentenceChangedArray, "wikipediaArray" : wikipediaArr, "occurance" : paragraphWordCount}
+  #   essayAsArray.append(paragraph)
 
-
-    sentenceChangedArray.append(sentenceChangedDict)
-
-
-    paragraph = [sentenceChangedArray, wikipediaArr]
-    essayAsArray.append(paragraph)
-  print('returning data')
-  print(essayAsArray)
-  return essayAsArray
-
+  # print('returning data')
   # print(essayAsArray)
-
-    #Array of Arrays of Array of Dictionaries
-
-    #wait for api function call it here on each sentence
-
-  #essayParagraphs = essayAsString.split("\n")
-
-  #essayAsString = ""
-
-  #for paragraphs in essayParagraphs:wq
-
-    #essayAsString = essayAsString + paragraphs
+  # return essayAsArray
+  return 0
 
 
 @app.route('/', methods=['GET','POST']) 
