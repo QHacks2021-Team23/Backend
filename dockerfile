@@ -1,11 +1,12 @@
-FROM python:3
+FROM python:3-slim
+
+WORKDIR /app
 
 COPY ./main.py ./
 
-COPY ./get_wikipedia_links.py ./
+COPY ./requirements.txt ./
+RUN python3 -m pip install --upgrade -r requirements.txt && rm ./requirements.txt
 
-RUN pip install PyDictionary
+CMD ["python", "./main.py"]
 
-RUN pip install --upgrade language_tool_python
 
-CMD [ "python", "./main.py" ]
