@@ -4,6 +4,36 @@ import os
 load_dotenv()
 SECRET_KEY = os.getenv('GOOGLE_API_KEY')
 
+def get_voice_api(text_content):
+    body = {
+    "document":{
+        "type":"PLAIN_TEXT",
+        "language": "EN",
+        "content": text_content
+    },
+    "encodingType":"UTF8"
+    }
+    res = requests.post('https://language.googleapis.com/v1/documents:analyzeSyntax?key='+SECRET_KEY, json=body)
+    res = res.json()
+    return_data = []
+    # Loop through tokens returned from the API
+    for token in res["tokens"]:
+        # Get the text content of this token. Usually a word or punctuation.
+        text = token["text"]
+        part_of_speech = token["partOfSpeech"]
+
+        return_data.append(dict(
+            text=text['content'],
+            voice=part_of_speech['voice'],
+        ))
+
+
+    for dictionary in return_data:
+        if dictionary["voice"] == "PASSIVE":
+            return "PASSIVE"
+    return "ACTIVE"
+    ##return the voice of the sentence
+
 
 def get_wiki_api(text_content):
     body = {
@@ -37,7 +67,13 @@ def get_wiki_api(text_content):
 
 
 
+#passive voice example
+passive_voice='''
+At dinner, six shrimp were eaten by Harry.
+'''
 
+text_content = passive_voice
+print(get_voice_api(text_content))
 
 
 
