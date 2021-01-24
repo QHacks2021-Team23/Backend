@@ -1,6 +1,9 @@
 from importlib import import_module
 from PyDictionary import PyDictionary
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
+FRONTEND_URL = os.getenv('FRONTEND_URL')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk import pos_tag
@@ -16,7 +19,7 @@ api = import_module('api')
 # from google.cloud import language_v1
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/.*": {"origins": "http://localhost:3000"}})
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 setting = "en-CA"
 
@@ -176,4 +179,4 @@ if __name__ == '__main__':
 
     print(re.split('(\s[^!|?|\.]*[!|?|\.])', para))
 
-    app.run(debug=True, host='localhost', port='5000')
+    app.run(debug=False, host='0.0.0.0', port='5000')
