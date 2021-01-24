@@ -16,8 +16,8 @@ cors = CORS(app, resources={r"/.*": {"origins": "http://localhost:3000"}})
 
 setting = "en-CA"
 
-# tense,
 
+# tense,
 
 # def countWords(words):
 #     dictCount = {}
@@ -229,6 +229,7 @@ def home():
     arrayOfParagraphs = json.loads(request)
     # data = parseData(arrayOfParagraphs)
     return jsonify(arrayOfParagraphs)
+
 
 
 @app.route('/changeLanguage', methods=['POST'])
