@@ -4,3 +4,4 @@ flask
 language_tool_python
 gunicorn
 regex
+dotenv

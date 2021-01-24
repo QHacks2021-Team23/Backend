@@ -14,8 +14,6 @@ app = Flask(__name__)
 
 setting = "en-CA"
 
-
-    #tense,
 def countWords(words):
   dictCount = {}
   stopword = set(stopwords.words('english'))
@@ -219,6 +217,8 @@ def getSynonym(wordToReplace):
   dictionary=PyDictionary()     
 
   return dictionary.synonym(wordToReplace)
+
+
 
 @app.route('/', methods=['GET','POST']) 
 def home():
