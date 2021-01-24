@@ -7,241 +7,252 @@ import language_tool_python
 import string
 # import get_wikipedia_links as app
 import random
-from flask import Flask, jsonify,request
-from google.cloud import language_v1
+from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
+# from google.cloud import language_v1
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/.*": {"origins": "http://localhost:3000"}})
 
 setting = "en-CA"
 
-def countWords(words):
-  dictCount = {}
-  stopword = set(stopwords.words('english'))
 
-  words = words.translate(str.maketrans('', '', string.punctuation))
-  word_tokens = word_tokenize(words)
-  arrayWords = []
+# tense,
 
-  for i in word_tokens:
+# def countWords(words):
+#     dictCount = {}
+#     stopword = set(stopwords.words('english'))
 
-    if i.lower() not in stopword:
+#     words = words.translate(str.maketrans('', '', string.punctuation))
+#     word_tokens = word_tokenize(words)
+#     arrayWords = []
 
-          arrayWords.append(i.lower())
+#     for i in word_tokens:
 
+#         if i.lower() not in stopword:
 
-  for j in arrayWords:
+#             arrayWords.append(i.lower())
 
-    if j in dictCount.keys():
+#     for j in arrayWords:
 
-          dictCount[j] = dictCount[j] + 1
+#         if j in dictCount.keys():
 
-    else:
-          dictCount[j] = 1
+#             dictCount[j] = dictCount[j] + 1
 
+#         else:
+#             dictCount[j] = 1
 
-  return dictCount
+#     return dictCount
 
 
-def replaceWord(sentence, wordToReplace):
+# def replaceWord(sentence, wordToReplace):
 
-  dictionary=PyDictionary()
+#     dictionary = PyDictionary()
 
-  words = word_tokenize(sentence)
+#     words = word_tokenize(sentence)
 
-  newSentence = ""
+#     newSentence = ""
 
-  for word in words:
-    newWord = word
-    if (word == wordToReplace):
+#     for word in words:
+#         newWord = word
+#         if (word == wordToReplace):
 
+#             newWordArray = dictionary.synonym(wordToReplace)
+#             newWord = random.choices(newWordArray)
+#         newSentence = newSentence + " " + newWord
 
-      newWordArray = dictionary.synonym(wordToReplace)
-      newWord = random.choices(newWordArray)
-    newSentence = newSentence + " " + newWord
+#     return newSentence
 
-  return newSentence
 
+# def get_voice(text_content):
+#     # print("getting voice")
+#     """
+#     Analyse the voice of the text. Ideal use case for sentence or paragraph.
 
+#     Args:
+#         text_content : The text content to analyze
 
-def get_voice(text_content):
-    # print("getting voice")
-    """
-    Analyse the voice of the text. Ideal use case for sentence or paragraph.
+#     Return:
+#         An array of dictionary that contains the word, and the voice (PASSIVE, ACTIVE, VOICE_UNKNOWN)
+#     """
 
-    Args:
-        text_content : The text content to analyze
+#     client = language_v1.LanguageServiceClient()
 
-    Return:
-        An array of dictionary that contains the word, and the voice (PASSIVE, ACTIVE, VOICE_UNKNOWN)
-    """
+#     type_ = language_v1.Document.Type.PLAIN_TEXT
+#     language = "en"
+#     document = {"content": text_content, "type_": type_, "language": language}
+#     encoding_type = language_v1.EncodingType.UTF8
 
-    client = language_v1.LanguageServiceClient()
+#     response = client.analyze_syntax(
+#         request={'document': document, 'encoding_type': encoding_type})
+#     return_data = []
+#     # Loop through tokens returned from the API
+#     for token in response.tokens:
+#         # Get the text content of this token. Usually a word or punctuation.
+#         text = token.text
+#         part_of_speech = token.part_of_speech
 
+#         return_data.append(dict(
+#             text=text.content,
+#             voice=language_v1.PartOfSpeech.Voice(part_of_speech.voice).name,
+#         ))
 
-    type_ = language_v1.Document.Type.PLAIN_TEXT
-    language = "en"
-    document = {"content": text_content, "type_": type_, "language": language}
-    encoding_type = language_v1.EncodingType.UTF8
+#     # print("Get Voice returned successfully...")
 
+#     for dictionary in return_data:
+#         if dictionary["voice"] == "PASSIVE":
+#             return "PASSIVE"
+#     return "ACTIVE"
+#     # return the voice of the sentence
 
-    response = client.analyze_syntax(request = {'document': document, 'encoding_type': encoding_type})
-    return_data = []
-    # Loop through tokens returned from the API
-    for token in response.tokens:
-        # Get the text content of this token. Usually a word or punctuation.
-        text = token.text
-        part_of_speech = token.part_of_speech
 
-        return_data.append(dict(
-            text=text.content,
-            voice=language_v1.PartOfSpeech.Voice(part_of_speech.voice).name,
-        ))
+# def get_wikipedia_links(text_content):
+#     """
+#     Use NLP to detect interesting people, place or things and provide wikipedia links to them
 
-    # print("Get Voice returned successfully...")
+#     Args:
+#         text_content The text content to analyze
 
-    for dictionary in return_data:
-        if dictionary["voice"] == "PASSIVE":
-            return "PASSIVE"
-    return "ACTIVE"
-    ##return the voice of the sentence
+#     Return:
+#         An array of dictionary that has name of phrase, type (PERSON,COMMON,OTHER), and wikipedia url
 
-def get_wikipedia_links(text_content):
-    """
-    Use NLP to detect interesting people, place or things and provide wikipedia links to them
+#     """
 
-    Args:
-        text_content The text content to analyze
+#     client = language_v1.LanguageServiceClient()
 
-    Return:
-        An array of dictionary that has name of phrase, type (PERSON,COMMON,OTHER), and wikipedia url
+#     # Available types: PLAIN_TEXT, HTML
+#     type_ = language_v1.Document.Type.PLAIN_TEXT
 
-    """
+#     language = "en"
+#     document = {"content": text_content, "type_": type_, "language": language}
+#     encoding_type = language_v1.EncodingType.UTF8
 
-    client = language_v1.LanguageServiceClient()
+#     response = client.analyze_entities(
+#         request={'document': document, 'encoding_type': encoding_type})
 
-    # Available types: PLAIN_TEXT, HTML
-    type_ = language_v1.Document.Type.PLAIN_TEXT
+#     return_data = []
 
-    language = "en"
-    document = {"content": text_content, "type_": type_, "language": language}
-    encoding_type = language_v1.EncodingType.UTF8
+#     for entity in response.entities:
+#         for metadata_name, metadata_value in entity.metadata.items():
+#             if(metadata_name == 'wikipedia_url'):
+#                 return_data.append(dict(
+#                     name=entity.name,
+#                     url=metadata_value
+#                 ))
+#     # print("Get Wiki Links returned successfully...")
+#     return return_data
 
-    response = client.analyze_entities(request = {'document': document, 'encoding_type': encoding_type})
 
-    return_data = []
+# def parseData(data):
 
-    for entity in response.entities:
-        for metadata_name, metadata_value in entity.metadata.items():
-            if(metadata_name=='wikipedia_url'):
-                return_data.append(dict(
-                    name=entity.name,
-                    url=metadata_value
-                ))
-    # print("Get Wiki Links returned successfully...")
-    return return_data
+#     print(json.load(data))
 
+#     # print("parsedata")
+#     # text - string
+#     # array of paragraphs
+#     #
+#     # return a text
 
-def parseData(data):
+#     # essay = json.load(data)
+#     # make it look
+#     # essay = json.load(data)[array]
 
-  print(json.load(data))
+#     # essay = ['''
+#     # Looking back on a childhood filled with events and memories, I find it rather difficult to pick one that leaves me with the fabled "warm and fuzzy feelings." As the daughter of an Air Force major, I had the pleasure of traveling across America in many moving trips. I have visited the monstrous trees of the Sequoia National Forest, stood on the edge of the Grand Canyon and have jumped on the beds at Caesar's Palace in Lake Tahoe. The day I picked my dog up from the pound was one of the happiest days of both of our lives. I had gone to the pound just a week earlier with the idea that I would just "look" at a puppy. Of course, you can no more just look at those squiggling little faces so filled with hope and joy than you can stop the sun from setting in the evening. I knew within minutes of walking in the door that I would get a puppy… but it wasn't until I saw him that I knew I had found my puppy. Looking for houses was supposed to be a fun and exciting process. Unfortunately, none of the ones that we saw seemed to match the specifications that we had established. They were too small, too impersonal, too close to the neighbors. After days of finding nothing even close, we began to wonder: was there really a perfect house out there for us?
+#     # ''',
+#     # '''
+#     # The afternoon grew so glowering that in the sixth inning the arc lights were turned on--always a wan sight in the daytime, like the burning headlights of a funeral procession. Aided by the gloom, Fisher was slicing through the Sox rookies, and Williams did not come to bat in the seventh. He was second up in the eighth. This was almost certainly his last time to come to the plate in Fenway Park, and instead of merely cheering, as we had at his three previous appearances, we stood, all of us, and applauded
+#     # ''']
 
-  # print("parsedata")
-  # text - string
-  # array of paragraphs
-  #
-  # return a text
+#     # essay = data
 
-  # essay = json.load(data)
-  #make it look
-  # essay = json.load(data)[array]
+#     # essayAsArray = []
 
-  # essay = ['''
-  # Looking back on a childhood filled with events and memories, I find it rather difficult to pick one that leaves me with the fabled "warm and fuzzy feelings." As the daughter of an Air Force major, I had the pleasure of traveling across America in many moving trips. I have visited the monstrous trees of the Sequoia National Forest, stood on the edge of the Grand Canyon and have jumped on the beds at Caesar's Palace in Lake Tahoe. The day I picked my dog up from the pound was one of the happiest days of both of our lives. I had gone to the pound just a week earlier with the idea that I would just "look" at a puppy. Of course, you can no more just look at those squiggling little faces so filled with hope and joy than you can stop the sun from setting in the evening. I knew within minutes of walking in the door that I would get a puppy… but it wasn't until I saw him that I knew I had found my puppy. Looking for houses was supposed to be a fun and exciting process. Unfortunately, none of the ones that we saw seemed to match the specifications that we had established. They were too small, too impersonal, too close to the neighbors. After days of finding nothing even close, we began to wonder: was there really a perfect house out there for us?
-  # ''',
-  # '''
-  # The afternoon grew so glowering that in the sixth inning the arc lights were turned on--always a wan sight in the daytime, like the burning headlights of a funeral procession. Aided by the gloom, Fisher was slicing through the Sox rookies, and Williams did not come to bat in the seventh. He was second up in the eighth. This was almost certainly his last time to come to the plate in Fenway Park, and instead of merely cheering, as we had at his three previous appearances, we stood, all of us, and applauded
-  # ''']
+#     # tool = language_tool_python.LanguageTool(setting)
 
-  # essay = data
+#     # for para in essay:
+#     #   sentences = para.re.split('.|!|?', str)
+#     #   sentenceChangedDict = {}
+#     #   wikipediaArr = {}
+#     #   sentenceChangedArray = []
+#     #   paragraphsWordCount = {}
 
-  # essayAsArray = []
+#     #   sentences = [x for x in sentences if x] #get rid of null
 
-  # tool = language_tool_python.LanguageTool(setting)
+#     #   paragraph = ""
 
-  # for para in essay:
-  #   sentences = para.re.split('.|!|?', str)
-  #   sentenceChangedDict = {}
-  #   wikipediaArr = {}
-  #   sentenceChangedArray = []
-  #   paragraphsWordCount = {}
+#     #   for sentence in sentences:
 
-  #   sentences = [x for x in sentences if x] #get rid of null
+#     #     newString = sentence
 
-  #   paragraph = ""
+#     #     if(sentence != tool.correct(sentence)):
+#     #       newString = tool.correct(sentence)
 
-  #   for sentence in sentences:
+#     #     sentenceWordCount = countWords(newString)
 
-  #     newString = sentence
+#     #     paragraphWordCount = mergeDictionary(paragraphWordCount, sentenceWordCount)
 
-  #     if(sentence != tool.correct(sentence)):
-  #       newString = tool.correct(sentence)
+#     #     ##uncomment later
+#     #     print('getting voice')
+#     #     voice = get_voice(newString)
+#     #     print('getting links')
+#     #     wikipediaArr = get_wikipedia_links(newString)
 
-  #     sentenceWordCount = countWords(newString)
+#     #     sentenceChangedDict["changed"] = newString != sentence
+#     #     sentenceChangedDict["sentence"] = newString
+#     #     sentenceChangedDict["voice"] = voice
 
-  #     paragraphWordCount = mergeDictionary(paragraphWordCount, sentenceWordCount)
+#     #     sentenceChangedArray.append(sentenceChangedArray)
 
-  #     ##uncomment later
-  #     print('getting voice')
-  #     voice = get_voice(newString)
-  #     print('getting links')
-  #     wikipediaArr = get_wikipedia_links(newString)
+#     #   if len(wikipediaArr) == 0: wikipediaArr[0] = {"name" : False}
 
-  #     sentenceChangedDict["changed"] = newString != sentence
-  #     sentenceChangedDict["sentence"] = newString
-  #     sentenceChangedDict["voice"] = voice
+#     #   paragraph = {"sentencesArray" : sentenceChangedArray, "wikipediaArray" : wikipediaArr, "occurance" : paragraphWordCount}
+#     #   essayAsArray.append(paragraph)
 
-  #     sentenceChangedArray.append(sentenceChangedArray)      
+#     # print('returning data')
+#     # print(essayAsArray)
+#     # return essayAsArray
+#     return 0
 
-  #   if len(wikipediaArr) == 0: wikipediaArr[0] = {"name" : False}
 
-  #   paragraph = {"sentencesArray" : sentenceChangedArray, "wikipediaArray" : wikipediaArr, "occurance" : paragraphWordCount}
-  #   essayAsArray.append(paragraph)
+# def getSynonym(wordToReplace):
 
-  # print('returning data')
-  # print(essayAsArray)
-  # return essayAsArray
-  return 0
+#     dictionary = PyDictionary()
 
-def getSynonym(wordToReplace):
+#     return dictionary.synonym(wordToReplace)
 
-  dictionary=PyDictionary()     
 
-  return dictionary.synonym(wordToReplace)
-
-
-
-@app.route('/', methods=['GET','POST']) 
+@app.route('/', methods=['GET', 'POST'])
 def home():
-  arrayOfParagraphs = request.get_json()["data"] #accept json, key data, and value as an array of strings
-  print(arrayOfParagraphs)
-  if arrayOfParagraphs:
-    data = parseData(arrayOfParagraphs)
-    return jsonify(data)
-  else:
-    return {"error" : True}
+    # accept json, key data, and value as an array of strings
+    print(request.headers.get('content-type'))
+    arrayOfParagraphs = json.loads(request)
+    # data = parseData(arrayOfParagraphs)
+    return jsonify(arrayOfParagraphs)
 
-@app.route('/changeLanguage',methods=['POST'])
+
+
+@app.route('/changeLanguage', methods=['POST'])
 def change():
-  setting = request.data.decode("utf-8")
+    setting = request.data.decode("utf-8")
+
+
+@app.route('/hello', methods=['GET'])
+def helloWorld():
+    print("Hello")
+    return jsonify({'hello': 'world'})
+
 
 @app.route('/getSynonym', methods=['POST'])
 def syn():
-  word = request.get_json()["word"]
-  data = getSynonym(word)
-  if (len(synonyms) != 0):
-    return jsonify(data)
-  else:
-    return {"error" : True}
+    word = request.get_json()["word"]
+    data = getSynonym(word)
+    if (len(synonyms) != 0):
+        return jsonify(data)
+    else:
+        return {"error": True}
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='localhost', port='5000',
+            load_dotenv=True)
